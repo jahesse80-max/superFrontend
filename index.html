@@ -51,7 +51,7 @@
 
       <script type="module">
         const {createApp} = Vue
-        const myApp1 = createApp({
+        const myApp1 = createApp({  //createsa new app instance
             data(){
                 return{
                     firstName:"Ichigo",
@@ -60,12 +60,12 @@
                 }
             },
             computed:{
-                fullName:function(){
+                fullName:function(){   // function returns the name of the user
                     return this.firstName + " " + this.lastName;
                 },
             },
             methods: {
-                addToBasket() {
+                addToBasket() { // function adds 1 to the basket eaach time
                     this.addtoBasket = this.addtoBasket + 1;
                 }
             }
@@ -74,6 +74,7 @@
     </script>
 
 
+//counter can be adjusted as needed but add a decrease button to remove items from the basket.
 </body>
 </html>
 
