@@ -40,6 +40,39 @@
     petstore.mount('#app');
 </script>
 
+<div id="divbasket">
+         
+         <p>You have {{addtoBasket}} items in your basket and (???) items in total. </p>
+
+         <button v-on:click="addToBasket()">Add to Basket</button>
+
+         <button v-bind:disabled="true"> Get more items</button>
+    </div>
+
+      <script type="module">
+        const {createApp} = Vue
+        const myApp1 = createApp({
+            data(){
+                return{
+                    firstName:"Ichigo",
+                    lastName: "Kurosaki",
+                    addtoBasket: 0,
+                }
+            },
+            computed:{
+                fullName:function(){
+                    return this.firstName + " " + this.lastName;
+                },
+            },
+            methods: {
+                addToBasket() {
+                    this.addtoBasket = this.addtoBasket + 1;
+                }
+            }
+        });
+        myApp1.mount("#divbasket")
+    </script>
+
 
 </body>
 </html>
