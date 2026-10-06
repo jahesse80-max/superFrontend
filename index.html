@@ -7,71 +7,52 @@
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
-    <h1>Vue.js Pet Depot</h1>
+    <h1>Schooling Books N More</h1>
 
 <div id="app">
+    <h1>Lessons Booked</h1>
 
-    <figure>
-        <img v-bind:src="product.image" width= 300>
-    </figure>
+    <li v-for="(lesson, lessonName) in lessons" :key="lessonName">
+        <h2>{{ lessonName }}</h2>
+        <p>Location: {{ lesson.location }}</p>
+        <p>Price: £{{ lesson.price }}</p>
+        <p>Space: {{ lesson.space }}</p>
+
+        <ul v-for="Book lessons">
+            {{ lesson.price }} - £{{ lessonname }} <button v-on:click="addTo(lessonName)">Add to Basket</button></b>
+        </ul>
      
-    <h2 v-text=" product.title"></h2>
-    <p v-text=" product.description"></p>
-    <p>Price: £{{product.price}}</p>
 </div>
 
 
 <script type="module">
     const {createApp} = Vue
-    const petstore = createApp({
+    const schoolingBooksApp = createApp({
         data(){
             return{
-                sitename: "Vue.js Pet Depot",
-                product: {
-                    id: 1001,
-                    title: "Cat Food, 25lb bag",
-                    description: "A 25 pound bag of irresistible organic goodness for your cat.",
-                    price: 20.99,
-                    image: "catFood.jpg"
-                }
+                lessons: {
+                    'Computer Science': {'location': 'Mitcham', 'price': 20, 'space': 5},
+                    'Mathematics': { 'location': 'Totteham', 'price': 15, 'space': 5},
+                    'English': {'location': 'Wembley', 'price': 10, 'space': 5},
+                    'Biology': {'location': 'Croydon', 'price': 25, 'space': 5},
+                    'Chemistry': {'location': 'Bromley', 'price': 30, 'space': 5},
+                    'Physics': {'location': 'Bexley', 'price': 35, 'space': 5},
+                    'Geography': {'location': 'Greenwich', 'price': 40, 'space': 5},
+                    'History': {'location': 'Lewisham', 'price': 45, 'space': 5}, 
+                    'Art': {'location': 'Southwark', 'price': 50, 'space': 5},
+                    'Music': {'location': 'Camberwell Green', 'price': 21, 'space': 5},
+                    'Physical Education': {'location': 'Brixton', 'price': 60, 'space': 5},
+                    'Drama': {'location': 'Clapham', 'price': 65, 'space': 5},
+                    
+                },
             }
         }
-    })
-    petstore.mount('#app');
+
+    });
+    schoolingBooksApp.mount('#app');
 </script>
 
-<div id="divbasket">
-         
-         <p>You have {{addtoBasket}} items in your basket and (???) items in total. </p>
 
-         <button v-on:click="addToBasket()">Add to Basket</button>
-
-         <button v-bind:disabled="true"> Get more items</button>
-    </div>
-
-      <script type="module">
-        const {createApp} = Vue
-        const myApp1 = createApp({  //createsa new app instance
-            data(){
-                return{
-                    firstName:"Ichigo",
-                    lastName: "Kurosaki",
-                    addtoBasket: 0,
-                }
-            },
-            computed:{
-                fullName:function(){   // function returns the name of the user
-                    return this.firstName + " " + this.lastName;
-                },
-            },
-            methods: {
-                addToBasket() { // function adds 1 to the basket eaach time
-                    this.addtoBasket = this.addtoBasket + 1;
-                }
-            }
-        });
-        myApp1.mount("#divbasket")
-    </script> 
 </body>
 </html>
 
