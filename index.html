@@ -3,57 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Schooling Books N More</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
-    <h1>Schooling Books N More</h1>
+    <header>
+        <h1>Schooling Books N More</h1>
+        <h3>Book your next lesson today</h3>
+    </header>
 
-<div id="app">
-    <h1>Lessons Booked</h1>
+    <div id="app">
+        <main v-if="!showCart">
+            <div class="toolbar">
+                <div class="sort-controls">
+                    <label for="sort">Sort by:</label>
+                    <select id="sort" v-model="sortBy">  //sorting controls
+                        <option value="subject">Subject</option>
+                        <option value="location">Location</option>
+                        <option value="price">Price</option>
+                        <option value="space">Open Spaces</option>
+                    </select>
+                    <select v-on:change="sortOrderChanged" v-model="sortOrder" aria-label="Sort order"> //allows user to select a sorting option
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+                <button v-on:click="showCart = true" :disabled="cart.length === 0">
+                    Shopping Cart ({{ cartItemCount }})
+                </button>
+            </div>
 
-    <li v-for="(lesson, lessonName) in lessons" :key="lessonName">
-        <h2>{{ lessonName }}</h2>
-        <p>Location: {{ lesson.location }}</p>
-        <p>Price: £{{ lesson.price }}</p>
-        <p>Space: {{ lesson.space }}</p>
+            <h2>Lessons Available</h2>
+            <div class="lesson-list">
+                <article class="lesson-card" v-for="lesson in sortedLessons" :key="lesson.id">
+                    <h2>{{ lesson.subject }}</h2>
+                    <p><strong>Location:</strong> {{ lesson.location }}</p>
+                    <p><strong>Price:</strong> £{{ lesson.price }}</p>
+                    <p><strong>Spaces:</strong> {{ lesson.space }}</p>
+                    <button v-on:click="addToCart(lesson)" :disabled="lesson.space === 0">
+                        Add to Cart
+                    </button>
+                </article>
+            </div>
+        </main>
 
-        <ul v-for="Book lessons">
-            {{ lesson.price }} - £{{ lessonname }} <button v-on:click="addTo(lessonName)">Add to Basket</button></b>
-        </ul>
-     
-</div>
+        <main v-else>
+            <div class="cart-header">
+                <h2>Shopping Cart</h2>
+                <button v-on:click="showCart = false">
+                    Back to Lessons
+                </button>
+            </div>
 
+            <p v-if="cart.length === 0">Your cart is empty.</p>
+            <div v-for="item in cart" :key="item.id" class="cart-item">
+                <div>
+                    <strong>{{ item.subject }}</strong>
+                    <span> - {{ item.location }}</span>
+                    <p>£{{ item.price }} each | Quantity: {{ item.quantity }}</p>
+                </div>
+                <button v-on:click="removeFromCart(item)">
+                    Remove
+                </button>
+            </div>
 
-<script type="module">
-    const {createApp} = Vue
-    const schoolingBooksApp = createApp({
-        data(){
-            return{
-                lessons: {
-                    'Computer Science': {'location': 'Mitcham', 'price': 20, 'space': 5},
-                    'Mathematics': { 'location': 'Totteham', 'price': 15, 'space': 5},
-                    'English': {'location': 'Wembley', 'price': 10, 'space': 5},
-                    'Biology': {'location': 'Croydon', 'price': 25, 'space': 5},
-                    'Chemistry': {'location': 'Bromley', 'price': 30, 'space': 5},
-                    'Physics': {'location': 'Bexley', 'price': 35, 'space': 5},
-                    'Geography': {'location': 'Greenwich', 'price': 40, 'space': 5},
-                    'History': {'location': 'Lewisham', 'price': 45, 'space': 5}, 
-                    'Art': {'location': 'Southwark', 'price': 50, 'space': 5},
-                    'Music': {'location': 'Camberwell Green', 'price': 21, 'space': 5},
-                    'Physical Education': {'location': 'Brixton', 'price': 60, 'space': 5},
-                    'Drama': {'location': 'Clapham', 'price': 65, 'space': 5},
-                    
+            <section class="checkout">
+                <h2>Checkout</h2>
+                <p><strong>Total: £{{ cartTotal }}</strong></p>
+                <form v-on:submit.prevent="checkout">
+                    <label for="name">Name</label>
+                    <input id="name" v-model.trim="customer.name" type="text"
+                        placeholder="Letters only" autocomplete="name">
+                    <label for="phone">Phone</label>
+                    <input id="phone" v-model.trim="customer.phone" type="tel"
+                        placeholder="Numbers only" autocomplete="tel">
+                    <p v-if="validationMessage" class="error">{{ validationMessage }}</p>
+                    <button type="submit" :disabled="!isValidCustomer || cart.length === 0">
+                        Checkout
+                    </button>
+                </form>
+                <p v-if="orderSubmitted" class="success">
+                    Your order has been submitted successfully, {{ customer.name }}!
+                </p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    showCart: false,
+                    sortBy: 'subject',
+                    sortOrder: 'asc',
+                    orderSubmitted: false,
+                    customer: {
+                        name: '',
+                        phone: ''
+                    },
+                    lessons: [
+                        { id: 1, subject: 'Computer Science', location: 'Mitcham', price: 20, space: 5, icon: 'fa-solid fa-laptop-code' },
+                        { id: 2, subject: 'Mathematics', location: 'Tottenham', price: 15, space: 5, icon: 'fa-solid fa-calculator' },
+                        { id: 3, subject: 'English', location: 'Wembley', price: 10, space: 5, icon: 'fa-solid fa-book' },
+                        { id: 4, subject: 'Biology', location: 'Croydon', price: 25, space: 5, icon: 'fa-solid fa-dna' },
+                        { id: 5, subject: 'Chemistry', location: 'Bromley', price: 30, space: 5, icon: 'fa-solid fa-flask' },
+                        { id: 6, subject: 'Physics', location: 'Bexley', price: 35, space: 5, icon: 'fa-solid fa-atom' },
+                        { id: 7, subject: 'Geography', location: 'Greenwich', price: 40, space: 5, icon: 'fa-solid fa-earth-americas' },
+                        { id: 8, subject: 'History', location: 'Lewisham', price: 45, space: 5, icon: 'fa-solid fa-landmark' },
+                        { id: 9, subject: 'Art', location: 'Southwark', price: 50, space: 5, icon: 'fa-solid fa-palette' },
+                        { id: 10, subject: 'Music', location: 'Camberwell Green', price: 21, space: 5, icon: 'fa-solid fa-music' },
+                        { id: 11, subject: 'Physical Education', location: 'Brixton', price: 60, space: 5, icon: 'fa-solid fa-person-running' },
+                        { id: 12, subject: 'Drama', location: 'Clapham', price: 65, space: 5, icon: 'fa-solid fa-masks-theater' }
+                    ],
+                    cart: []
+                };
+            },
+            computed: {
+                sortedLessons() {
+                    return [...this.lessons].sort((first, second) => {
+                        const firstValue = first[this.sortBy];
+                        const secondValue = second[this.sortBy];
+                        const comparison = typeof firstValue === 'string'
+                            ? firstValue.localeCompare(secondValue)
+                            : firstValue - secondValue;
+                        return this.sortOrder === 'asc' ? comparison : -comparison;
+                    });
                 },
+                cartItemCount() {
+                    return this.cart.reduce((total, item) => total + item.quantity, 0);
+                },
+                cartTotal() {
+                    return this.cart.reduce((total, item) => total + item.price * item.quantity, 0);
+                },
+                isValidCustomer() {
+                    return /^[A-Za-z ]+$/.test(this.customer.name)
+                        && /^[0-9]+$/.test(this.customer.phone);
+                },
+                validationMessage() {
+                    if (!this.customer.name && !this.customer.phone) {
+                        return '';
+                    }
+                    if (!/^[A-Za-z ]+$/.test(this.customer.name)) {
+                        return 'Name must contain letters and spaces only.';
+                    }
+                    if (!/^[0-9]+$/.test(this.customer.phone)) {
+                        return 'Phone must contain numbers only.';
+                    }
+                    return '';
+                }
+            },
+            methods: {
+                addToCart(lesson) {
+                    if (lesson.space === 0) {
+                        return;
+                    }
+                    lesson.space -= 1;
+                    const cartItem = this.cart.find(item => item.id === lesson.id);
+                    if (cartItem) {
+                        cartItem.quantity += 1;
+                    } else {
+                        this.cart.push({ ...lesson, quantity: 1 });
+                    }
+                },
+                removeFromCart(item) {
+                    const lesson = this.lessons.find(entry => entry.id === item.id);
+                    if (lesson) {
+                        lesson.space += item.quantity;
+                    }
+                    this.cart = this.cart.filter(entry => entry.id !== item.id);
+                },
+                checkout() {
+                    if (this.isValidCustomer && this.cart.length > 0) {
+                        this.orderSubmitted = true;
+                    }
+                }
             }
-        }
-
-    });
-    schoolingBooksApp.mount('#app');
-</script>
-
-
+        }).mount('#app');
+    </script>
 </body>
 </html>
-
-
