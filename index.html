@@ -125,9 +125,9 @@
             computed: {
                 sortedLessons() {
                     return [...this.lessons].sort((first, second) => {
-                        const firstValue = first[this.sortBy];
+                        const firstValue = first[this.sortBy]; //sorts by first lessons property
                         const secondValue = second[this.sortBy];
-                        const comparison = typeof firstValue === 'string'
+                        const comparison = typeof firstValue === 'string' //compares values based oon type
                             ? firstValue.localeCompare(secondValue)
                             : firstValue - secondValue;
                         return this.sortOrder === 'asc' ? comparison : -comparison;
