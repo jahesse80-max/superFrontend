@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schooling Books N More</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="frontend.css">
 </head>
 <body>
     <header>
@@ -18,7 +17,7 @@
         <main v-if="!showCart">
             <div class="toolbar">
                 <div class="sort-controls">
-                    <label for="sort">Sort by:</label>
+                    <label for="sort"><strong>Sort by:</strong></label>
                     <select id="sort" v-model="sortBy">  //sorting controls
                         <option value="subject">Subject</option>
                         <option value="location">Location</option>
@@ -26,8 +25,8 @@
                         <option value="space">Open Spaces</option>
                     </select>
                     <select v-on:change="sortOrderChanged" v-model="sortOrder" aria-label="Sort order"> //allows user to select a sorting option
-                        <option value="asc">Ascending</option>
-                        <option value="desc">Descending</option>
+                        <option value="ascending">Ascending</option>
+                        <option value="descending">Descending</option>
                     </select>
                 </div>
                 <button v-on:click="showCart = true" :disabled="cart.length === 0">
@@ -39,9 +38,9 @@
             <div class="lesson-list">
                 <article class="lesson-card" v-for="lesson in sortedLessons" :key="lesson.id">
                     <h2>{{ lesson.subject }}</h2>
-                    <p><strong>Location:</strong> {{ lesson.location }}</p>
-                    <p><strong>Price:</strong> £{{ lesson.price }}</p>
-                    <p><strong>Spaces:</strong> {{ lesson.space }}</p>
+                    <p><i>Location:</i> {{ lesson.location }}</p>
+                    <p><i>Price:</i> £{{ lesson.price }}</p>
+                    <p><i>Spaces:</i> {{ lesson.space }}</p>
                     <button v-on:click="addToCart(lesson)" :disabled="lesson.space === 0">
                         Add to Cart
                     </button>
@@ -72,18 +71,7 @@
             <section class="checkout">
                 <h2>Checkout</h2>
                 <p><strong>Total: £{{ cartTotal }}</strong></p>
-                <form v-on:submit.prevent="checkout">
-                    <label for="name">Name</label>
-                    <input id="name" v-model.trim="customer.name" type="text"
-                        placeholder="Letters only" autocomplete="name">
-                    <label for="phone">Phone</label>
-                    <input id="phone" v-model.trim="customer.phone" type="tel"
-                        placeholder="Numbers only" autocomplete="tel">
-                    <p v-if="validationMessage" class="error">{{ validationMessage }}</p>
-                    <button type="submit" :disabled="!isValidCustomer || cart.length === 0">
-                        Checkout
-                    </button>
-                </form>
+                <p v-if="cart.length > 0 && !orderSubmitted">  
                 <p v-if="orderSubmitted" class="success">
                     Your order has been submitted successfully, {{ customer.name }}!
                 </p>
@@ -106,18 +94,18 @@
                         phone: ''
                     },
                     lessons: [
-                        { id: 1, subject: 'Computer Science', location: 'Mitcham', price: 20, space: 5, icon: 'fa-solid fa-laptop-code' },
-                        { id: 2, subject: 'Mathematics', location: 'Tottenham', price: 15, space: 5, icon: 'fa-solid fa-calculator' },
-                        { id: 3, subject: 'English', location: 'Wembley', price: 10, space: 5, icon: 'fa-solid fa-book' },
-                        { id: 4, subject: 'Biology', location: 'Croydon', price: 25, space: 5, icon: 'fa-solid fa-dna' },
-                        { id: 5, subject: 'Chemistry', location: 'Bromley', price: 30, space: 5, icon: 'fa-solid fa-flask' },
-                        { id: 6, subject: 'Physics', location: 'Bexley', price: 35, space: 5, icon: 'fa-solid fa-atom' },
-                        { id: 7, subject: 'Geography', location: 'Greenwich', price: 40, space: 5, icon: 'fa-solid fa-earth-americas' },
-                        { id: 8, subject: 'History', location: 'Lewisham', price: 45, space: 5, icon: 'fa-solid fa-landmark' },
-                        { id: 9, subject: 'Art', location: 'Southwark', price: 50, space: 5, icon: 'fa-solid fa-palette' },
-                        { id: 10, subject: 'Music', location: 'Camberwell Green', price: 21, space: 5, icon: 'fa-solid fa-music' },
-                        { id: 11, subject: 'Physical Education', location: 'Brixton', price: 60, space: 5, icon: 'fa-solid fa-person-running' },
-                        { id: 12, subject: 'Drama', location: 'Clapham', price: 65, space: 5, icon: 'fa-solid fa-masks-theater' }
+                        { id: 1, subject: 'Computer Science', location: 'Mitcham', price: 20, space: 5, },
+                        { id: 2, subject: 'Mathematics', location: 'Tottenham', price: 15, space: 5,  },
+                        { id: 3, subject: 'English', location: 'Wembley', price: 10, space: 5,  },
+                        { id: 4, subject: 'Biology', location: 'Croydon', price: 25, space: 5, },
+                        { id: 5, subject: 'Chemistry', location: 'Bromley', price: 30, space: 5,  },
+                        { id: 6, subject: 'Physics', location: 'Bexley', price: 35, space: 5,  },
+                        { id: 7, subject: 'Geography', location: 'Greenwich', price: 40, space: 5,},
+                        { id: 8, subject: 'History', location: 'Lewisham', price: 45, space: 5, },
+                        { id: 9, subject: 'Art', location: 'Southwark', price: 50, space: 5,  },
+                        { id: 10, subject: 'Music', location: 'Camberwell Green', price: 21, space: 5, }
+                        { id: 11, subject: 'Physical Education', location: 'Brixton', price: 60, space: 5,  },
+                        { id: 12, subject: 'Drama', location: 'Clapham', price: 65, space: 5,  }
                     ],
                     cart: []
                 };
@@ -176,13 +164,14 @@
                     }
                     this.cart = this.cart.filter(entry => entry.id !== item.id);
                 },
-                checkout() {
+                submitOrder() {
                     if (this.isValidCustomer && this.cart.length > 0) {
                         this.orderSubmitted = true;
                     }
-                }
+                },
             }
-        }).mount('#app');
+        }
+        ).mount('#app');
     </script>
 </body>
 </html>
